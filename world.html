@@ -1,0 +1,582 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IZIPI — МИРОВАЯ КАРТА</title>
+<meta name="description" content="Все активированные IZIPI на одной карте. Каждая точка — реальный владелец.">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230f0f0f'/><text y='.9em' font-size='82' font-family='serif' fill='%23f0ece4' x='10'>Z</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --coal:     #0f0f0f;
+    --bone:     #f0ece4;
+    --graphite: #2a2a2a;
+    --steel:    #6b6b6b;
+    --green:    #4a7c59;
+    --blue:     #2d5f8a;
+  }
+
+  html, body {
+    background: var(--coal);
+    color: var(--bone);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    height: 100%;
+    overflow: hidden;
+  }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 200;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 24px 48px;
+  }
+  .nav-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    letter-spacing: 0.22em;
+    color: var(--bone);
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+  .nav-brand:hover { opacity: 1; }
+  .nav-count {
+    font-size: 11px;
+    letter-spacing: 0.18em;
+    color: var(--steel);
+    text-transform: uppercase;
+  }
+  .nav-count span {
+    color: var(--bone);
+    font-weight: 500;
+  }
+
+  /* ── MAP CONTAINER ── */
+  #map-container {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  #world-svg {
+    width: 100%;
+    height: 100%;
+    opacity: 0.18;
+  }
+
+  /* ── DOTS ── */
+  .avatar-dot {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    cursor: pointer;
+  }
+
+  .dot-ring {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: var(--bone);
+    box-shadow: 0 0 0 0 rgba(240,236,228,0.6);
+    animation: pulse 2.4s ease-out infinite;
+    transition: transform 0.2s;
+  }
+
+  .avatar-dot:hover .dot-ring {
+    transform: scale(1.5);
+  }
+
+  .avatar-dot.alive .dot-ring {
+    background: var(--bone);
+  }
+  .avatar-dot.dead .dot-ring {
+    background: var(--steel);
+    animation: none;
+    opacity: 0.4;
+  }
+
+  @keyframes pulse {
+    0%   { box-shadow: 0 0 0 0   rgba(240,236,228,0.5); }
+    50%  { box-shadow: 0 0 0 10px rgba(240,236,228,0);   }
+    100% { box-shadow: 0 0 0 0   rgba(240,236,228,0);    }
+  }
+
+  /* ── TOOLTIP ── */
+  .tooltip {
+    position: absolute;
+    bottom: 22px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--coal);
+    border: 1px solid rgba(240,236,228,0.12);
+    padding: 12px 18px;
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+    min-width: 150px;
+    text-align: center;
+  }
+  .avatar-dot:hover .tooltip { opacity: 1; }
+
+  .tooltip-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    letter-spacing: 0.12em;
+    color: var(--bone);
+    display: block;
+    margin-bottom: 4px;
+  }
+  .tooltip-status {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--steel);
+    display: block;
+  }
+  .tooltip-status.alive { color: #7ab08a; }
+  .tooltip-status.dead  { color: var(--steel); opacity: 0.5; }
+
+  /* ── SIDE PANEL ── */
+  #panel {
+    position: fixed;
+    right: 0; top: 0; bottom: 0;
+    width: 320px;
+    background: rgba(15,15,15,0.92);
+    backdrop-filter: blur(12px);
+    border-left: 1px solid rgba(240,236,228,0.06);
+    display: flex;
+    flex-direction: column;
+    padding: 100px 40px 40px;
+    gap: 32px;
+    transform: translateX(100%);
+    transition: transform 0.35s cubic-bezier(0.25, 0.1, 0.25, 1);
+    z-index: 150;
+  }
+  #panel.open { transform: translateX(0); }
+
+  #panel-close {
+    position: absolute;
+    top: 24px; right: 24px;
+    background: none; border: none;
+    color: var(--steel);
+    font-size: 20px;
+    cursor: pointer;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+    font-family: 'Playfair Display', serif;
+  }
+  #panel-close:hover { opacity: 1; }
+
+  #panel-avatar {
+    width: 72px;
+    height: 72px;
+    border-radius: 50%;
+    background: var(--graphite);
+    border: 1px solid rgba(240,236,228,0.1);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    color: var(--bone);
+    flex-shrink: 0;
+  }
+
+  #panel-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 22px;
+    letter-spacing: 0.1em;
+    color: var(--bone);
+  }
+
+  .panel-stat {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1px solid rgba(240,236,228,0.06);
+    padding-bottom: 12px;
+  }
+  .panel-stat-label {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--steel);
+  }
+  .panel-stat-value {
+    font-family: 'Playfair Display', serif;
+    font-size: 15px;
+    color: var(--bone);
+  }
+
+  #panel-status-badge {
+    display: inline-block;
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    padding: 6px 14px;
+    border-radius: 2px;
+    align-self: flex-start;
+  }
+  #panel-status-badge.alive {
+    background: rgba(74,124,89,0.15);
+    color: #7ab08a;
+    border: 1px solid rgba(74,124,89,0.3);
+  }
+  #panel-status-badge.dead {
+    background: rgba(107,107,107,0.1);
+    color: var(--steel);
+    border: 1px solid rgba(107,107,107,0.2);
+  }
+
+  /* ── BOTTOM BAR ── */
+  #bottom-bar {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    padding: 20px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    z-index: 100;
+  }
+  .bar-label {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--steel);
+    text-transform: uppercase;
+  }
+  .bar-dna {
+    display: flex;
+    gap: 12px;
+    align-items: center;
+  }
+  .bar-dna span {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    color: rgba(240,236,228,0.25);
+    letter-spacing: 0.08em;
+  }
+
+  /* ── BIRTHDAY BANNER ── */
+  #birthday-banner {
+    position: fixed;
+    top: 80px; left: 50%;
+    transform: translateX(-50%);
+    z-index: 300;
+    background: var(--coal);
+    border: 1px solid rgba(240,236,228,0.2);
+    padding: 16px 32px;
+    text-align: center;
+    display: none;
+  }
+  #birthday-banner.visible { display: block; }
+  #birthday-banner p {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    letter-spacing: 0.12em;
+    color: var(--bone);
+  }
+  #birthday-banner small {
+    font-size: 10px;
+    letter-spacing: 0.14em;
+    color: var(--steel);
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 768px) {
+    nav { padding: 20px 24px; }
+    #panel { width: 100%; }
+    #bottom-bar { padding: 16px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a class="nav-brand" href="index.html">IZIPI</a>
+  <div class="nav-count">Активировано: <span id="alive-count">0</span></div>
+</nav>
+
+<!-- BIRTHDAY BANNER (показывается 2 июля) -->
+<div id="birthday-banner">
+  <p>02 · 07</p>
+  <small>Сегодня они возвращаются</small>
+</div>
+
+<!-- MAP -->
+<div id="map-container">
+  <!-- Простая SVG-карта мира (контуры) -->
+  <svg id="world-svg" viewBox="0 0 1000 500" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+    <!-- Упрощённые контуры континентов -->
+    <!-- Европа -->
+    <path fill="none" stroke="#f0ece4" stroke-width="0.8"
+      d="M480,80 L500,75 L520,78 L535,70 L545,80 L540,95 L530,100 L520,110 L510,105 L500,115 L490,112 L480,105 L475,95 Z"/>
+    <!-- Россия -->
+    <path fill="none" stroke="#f0ece4" stroke-width="0.8"
+      d="M520,60 L600,50 L700,55 L780,60 L820,70 L830,90 L790,100 L750,95 L700,100 L660,95 L620,100 L580,95 L545,90 L530,80 Z"/>
+    <!-- Африка -->
+    <path fill="none" stroke="#f0ece4" stroke-width="0.8"
+      d="M480,160 L510,155 L530,170 L535,200 L525,240 L510,270 L490,280 L475,265 L465,230 L460,200 L465,170 Z"/>
+    <!-- Азия -->
+    <path fill="none" stroke="#f0ece4" stroke-width="0.8"
+      d="M545,90 L620,85 L700,90 L770,100 L810,120 L800,150 L760,160 L720,155 L680,165 L650,180 L620,175 L580,160 L555,145 L540,130 L542,110 Z"/>
+    <!-- Сев. Америка -->
+    <path fill="none" stroke="#f0ece4" stroke-width="0.8"
+      d="M120,70 L180,65 L230,75 L260,100 L270,130 L255,160 L230,180 L200,185 L175,170 L155,145 L140,120 L125,95 Z"/>
+    <!-- Юж. Америка -->
+    <path fill="none" stroke="#f0ece4" stroke-width="0.8"
+      d="M200,200 L240,195 L265,210 L270,250 L255,300 L230,330 L205,320 L190,290 L185,255 L190,225 Z"/>
+    <!-- Австралия -->
+    <path fill="none" stroke="#f0ece4" stroke-width="0.8"
+      d="M730,250 L790,245 L820,260 L825,290 L800,310 L760,308 L735,290 L728,268 Z"/>
+    <!-- Гренландия -->
+    <path fill="none" stroke="#f0ece4" stroke-width="0.8"
+      d="M340,30 L390,25 L400,45 L385,58 L355,55 L335,45 Z"/>
+    <!-- Линия экватора -->
+    <line x1="0" y1="250" x2="1000" y2="250" stroke="#f0ece4" stroke-width="0.3" stroke-dasharray="4,8" opacity="0.3"/>
+    <!-- Сетка меридианов -->
+    <line x1="250" y1="0" x2="250" y2="500" stroke="#f0ece4" stroke-width="0.2" opacity="0.15"/>
+    <line x1="500" y1="0" x2="500" y2="500" stroke="#f0ece4" stroke-width="0.2" opacity="0.15"/>
+    <line x1="750" y1="0" x2="750" y2="500" stroke="#f0ece4" stroke-width="0.2" opacity="0.15"/>
+  </svg>
+
+  <!-- Точки аватаров — генерируются JS -->
+  <div id="dots-layer"></div>
+</div>
+
+<!-- SIDE PANEL -->
+<div id="panel">
+  <button id="panel-close">×</button>
+  <div id="panel-avatar">П</div>
+  <div id="panel-name">—</div>
+  <div id="panel-status-badge" class="alive">жив</div>
+  <div id="panel-stats"></div>
+</div>
+
+<!-- BOTTOM BAR -->
+<div id="bottom-bar">
+  <div class="bar-label">izipi.moscow · серия 25</div>
+  <div class="bar-dna">
+    <span>Ж</span><span>·</span><span>Z</span><span>·</span><span>25</span>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════════
+// НАСТРОЙКА — ЗАМЕНИ SHEET_ID НА СВОЙ
+// Как получить: открой таблицу → Файл → Поделиться →
+// Опубликовать в интернете → CSV → скопируй URL
+// Из URL возьми часть между /d/ и /export
+// ══════════════════════════════════════════════════════
+const SHEET_CSV_URL = 'https://docs.google.com/spreadsheets/d/ТВОЙ_SHEET_ID/export?format=csv&gid=0';
+
+// Координаты городов — пополняй по мере появления владельцев
+const CITY_COORDS = {
+  'москва':           { lat: 55.75, lng: 37.62 },
+  'санкт-петербург':  { lat: 59.93, lng: 30.32 },
+  'питер':            { lat: 59.93, lng: 30.32 },
+  'новосибирск':      { lat: 54.99, lng: 82.90 },
+  'екатеринбург':     { lat: 56.84, lng: 60.60 },
+  'казань':           { lat: 55.79, lng: 49.12 },
+  'нижний новгород':  { lat: 56.33, lng: 44.00 },
+  'челябинск':        { lat: 55.16, lng: 61.40 },
+  'омск':             { lat: 54.99, lng: 73.37 },
+  'самара':           { lat: 53.20, lng: 50.15 },
+  'ростов-на-дону':   { lat: 47.23, lng: 39.72 },
+  'уфа':              { lat: 54.74, lng: 55.97 },
+  'красноярск':       { lat: 56.01, lng: 92.87 },
+  'воронеж':          { lat: 51.67, lng: 39.18 },
+  'пермь':            { lat: 58.01, lng: 56.23 },
+  'волгоград':        { lat: 48.71, lng: 44.51 },
+  'краснодар':        { lat: 45.04, lng: 38.97 },
+  'тюмень':           { lat: 57.15, lng: 68.00 },
+  'саратов':          { lat: 51.53, lng: 46.03 },
+  'тольятти':         { lat: 53.51, lng: 49.42 },
+  'барнаул':          { lat: 53.35, lng: 83.79 },
+  'ижевск':           { lat: 56.85, lng: 53.22 },
+  'хабаровск':        { lat: 48.48, lng: 135.08 },
+  'владивосток':      { lat: 43.12, lng: 131.89 },
+  'иркутск':          { lat: 52.30, lng: 104.30 },
+  'ярославль':        { lat: 57.63, lng: 39.87 },
+  'махачкала':        { lat: 42.98, lng: 47.50 },
+  'томск':            { lat: 56.50, lng: 84.97 },
+  'новокузнецк':      { lat: 53.76, lng: 87.10 },
+  'оренбург':         { lat: 51.77, lng: 55.10 },
+  'кемерово':         { lat: 55.35, lng: 86.09 },
+  'рязань':           { lat: 54.63, lng: 39.74 },
+  'астрахань':        { lat: 46.35, lng: 48.04 },
+  'набережные челны': { lat: 55.74, lng: 52.39 },
+  'пенза':            { lat: 53.20, lng: 45.00 },
+  'киров':            { lat: 58.60, lng: 49.65 },
+  'липецк':           { lat: 52.61, lng: 39.60 },
+  'чебоксары':        { lat: 56.15, lng: 47.25 },
+  'тула':             { lat: 54.19, lng: 37.62 },
+  'калининград':      { lat: 54.71, lng: 20.51 },
+  'брянск':           { lat: 53.24, lng: 34.37 },
+  'курск':            { lat: 51.74, lng: 36.19 },
+  'иваново':          { lat: 57.00, lng: 40.97 },
+  'улан-удэ':         { lat: 51.83, lng: 107.60 },
+  'сочи':             { lat: 43.60, lng: 39.72 },
+  // СНГ
+  'алматы':           { lat: 43.26, lng: 76.95 },
+  'астана':           { lat: 51.18, lng: 71.45 },
+  'минск':            { lat: 53.90, lng: 27.57 },
+  'киев':             { lat: 50.45, lng: 30.52 },
+  'ташкент':          { lat: 41.30, lng: 69.27 },
+  'баку':             { lat: 40.41, lng: 49.87 },
+  'тбилиси':          { lat: 41.69, lng: 44.83 },
+  'ереван':           { lat: 40.18, lng: 44.51 },
+  'бишкек':           { lat: 42.87, lng: 74.59 },
+  // Мир
+  'берлин':           { lat: 52.52, lng: 13.40 },
+  'лондон':           { lat: 51.51, lng: -0.13 },
+  'нью-йорк':         { lat: 40.71, lng: -74.01 },
+  'токио':            { lat: 35.68, lng: 139.69 },
+  'дубай':            { lat: 25.20, lng: 55.27 },
+};
+
+function cityToCoords(city) {
+  const key = city.toLowerCase().trim();
+  return CITY_COORDS[key] || null;
+}
+
+// ── CSV ПАРСЕР ──
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  if (lines.length < 2) return [];
+  const headers = lines[0].split(',').map(h => h.replace(/"/g, '').trim().toLowerCase());
+  return lines.slice(1).map(line => {
+    // Простой парсер (не обрабатывает запятые внутри кавычек — достаточно для наших данных)
+    const vals = line.split(',').map(v => v.replace(/"/g, '').trim());
+    const obj = {};
+    headers.forEach((h, i) => obj[h] = vals[i] || '');
+    return obj;
+  });
+}
+
+// ── ЗАГРУЗКА ──
+async function loadAvatars() {
+  // Если URL не настроен — показываем заглушку
+  if (SHEET_CSV_URL.includes('ТВОЙ_SHEET_ID')) {
+    return [
+      { name: 'Жегалкин Павел', city: 'Москва',           lat: 55.75, lng: 37.62, alive: 'TRUE',  activated: '27.05.2026' },
+      { name: 'А.',             city: 'Санкт-Петербург',   lat: 59.93, lng: 30.32, alive: 'TRUE',  activated: '27.05.2026' },
+      { name: 'M.',             city: 'Новосибирск',       lat: 54.99, lng: 82.90, alive: 'TRUE',  activated: '27.05.2026' },
+    ];
+  }
+  try {
+    const res  = await fetch(SHEET_CSV_URL);
+    const text = await res.text();
+    const rows = parseCSV(text);
+    return rows.map(row => {
+      const coords = cityToCoords(row['город'] || row['city'] || '');
+      return {
+        name:      row['имя'] || row['name'] || '—',
+        city:      row['город'] || row['city'] || '—',
+        lat:       coords ? coords.lat : parseFloat(row['lat']) || 55.75,
+        lng:       coords ? coords.lng : parseFloat(row['lng']) || 37.62,
+        alive:     (row['статус'] || row['alive'] || 'TRUE').toUpperCase() !== 'FALSE',
+        activated: row['дата'] || row['timestamp'] || '—',
+      };
+    }).filter(r => r.name !== '—');
+  } catch(e) {
+    console.warn('Не удалось загрузить таблицу:', e);
+    return [];
+  }
+}
+
+// Перевод координат в % позицию на SVG viewBox 1000×500
+// lng: -180..180 → 0..100%
+// lat: 90..-90   → 0..100%
+function latLngToPercent(lat, lng) {
+  const x = ((lng + 180) / 360) * 100;
+  const y = ((90 - lat) / 180) * 100;
+  return { x, y };
+}
+
+const dotsLayer   = document.getElementById('dots-layer');
+const panel       = document.getElementById('panel');
+const panelClose  = document.getElementById('panel-close');
+const panelName   = document.getElementById('panel-name');
+const panelAvatar = document.getElementById('panel-avatar');
+const panelBadge  = document.getElementById('panel-status-badge');
+const panelStats  = document.getElementById('panel-stats');
+const aliveCount  = document.getElementById('alive-count');
+
+// День рождения — 2 июля
+function checkBirthday() {
+  const now = new Date();
+  if (now.getMonth() === 6 && now.getDate() === 2) {
+    document.getElementById('birthday-banner').classList.add('visible');
+  }
+}
+checkBirthday();
+
+function renderDots(avatars) {
+  dotsLayer.innerHTML = '';
+  const living = avatars.filter(a => a.alive === true || a.alive === 'TRUE').length;
+  aliveCount.textContent = living;
+
+  avatars.forEach(avatar => {
+    const alive = avatar.alive === true || String(avatar.alive).toUpperCase() === 'TRUE';
+    const pos   = latLngToPercent(avatar.lat, avatar.lng);
+
+    const dot = document.createElement('div');
+    dot.className = `avatar-dot ${alive ? 'alive' : 'dead'}`;
+    dot.style.left = pos.x + '%';
+    dot.style.top  = pos.y + '%';
+
+    dot.innerHTML = `
+      <div class="dot-ring"></div>
+      <div class="tooltip">
+        <span class="tooltip-name">${avatar.name}</span>
+        <span class="tooltip-status ${alive ? 'alive' : 'dead'}">${alive ? 'жив' : 'мёртв'} · ${avatar.city}</span>
+      </div>
+    `;
+
+    dot.addEventListener('click', () => openPanel({ ...avatar, alive }));
+    dotsLayer.appendChild(dot);
+  });
+}
+
+function openPanel(avatar) {
+  panelName.textContent = avatar.name;
+  panelAvatar.textContent = avatar.name[0];
+  panelBadge.className = `panel-status-badge ${avatar.alive ? 'alive' : 'dead'}`;
+  panelBadge.textContent = avatar.alive ? 'жив' : 'мёртв';
+
+  const stats = [
+    { label: 'Город',       value: avatar.city },
+    { label: 'Активирован', value: avatar.activated },
+  ];
+
+  panelStats.innerHTML = stats.map(s => `
+    <div class="panel-stat">
+      <span class="panel-stat-label">${s.label}</span>
+      <span class="panel-stat-value">${s.value}</span>
+    </div>
+  `).join('');
+
+  panel.classList.add('open');
+}
+
+panelClose.addEventListener('click', () => panel.classList.remove('open'));
+
+document.getElementById('map-container').addEventListener('click', e => {
+  if (!e.target.closest('.avatar-dot')) panel.classList.remove('open');
+});
+
+// ── ЗАПУСК ──
+loadAvatars().then(renderDots);
+</script>
+
+</body>
+</html>

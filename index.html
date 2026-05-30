@@ -1,0 +1,585 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IZIPI — Алюминиевый MagSafe-диск с подшипником</title>
+<meta name="description" content="IZIPI — выточенный на токарном станке алюминиевый диск с MagSafe и подшипником. Твой iPhone теперь вращается. Серия 25.">
+<meta property="og:title" content="IZIPI — Алюминиевый MagSafe-диск">
+<meta property="og:description" content="Выточен на токарном станке. MagSafe + подшипник. iPhone вращается на столе. 2 500 ₽.">
+<meta property="og:image" content="https://izipi.moscow/IZIPI.jpg">
+<meta property="og:url" content="https://izipi.moscow">
+<meta property="og:type" content="product">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230f0f0f'/><text y='.9em' font-size='82' font-family='serif' fill='%23f0ece4' x='10'>Z</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --coal: #0f0f0f;
+    --bone: #f0ece4;
+    --graphite: #2a2a2a;
+    --steel: #6b6b6b;
+  }
+
+  html { scroll-behavior: smooth; }
+  body { background: var(--coal); color: var(--bone); font-family: 'Inter', sans-serif; font-weight: 300; overflow-x: hidden; }
+
+  /* ── NAV ── */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    padding: 24px 48px;
+    background: transparent;
+    transition: background 0.4s;
+  }
+  nav.scrolled { background: rgba(15,15,15,0.95); backdrop-filter: blur(8px); }
+
+  .nav-brand {
+    font-family: 'Playfair Display', serif;
+    font-weight: 400;
+    font-size: 13px;
+    letter-spacing: 0.22em;
+    color: var(--bone);
+    text-decoration: none;
+    opacity: 0.7;
+    transition: opacity 0.2s;
+  }
+  .nav-brand:hover { opacity: 1; }
+
+  /* ── HERO — 100vh black ── */
+  .hero {
+    height: 100vh;
+    background: var(--coal);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 72px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg-z {
+    position: absolute;
+    font-family: 'Playfair Display', serif;
+    font-size: 60vw;
+    font-weight: 700;
+    color: rgba(240,236,228,0.02);
+    line-height: 1;
+    user-select: none;
+    pointer-events: none;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    letter-spacing: -0.05em;
+  }
+
+  /* ── DISC ── */
+  .disc-wrap {
+    width: 280px;
+    height: 280px;
+    border-radius: 50%;
+    flex-shrink: 0;
+    position: relative;
+    background: radial-gradient(circle at 36% 30%,
+      #f8f8f6 0%, #e0e0dd 22%, #c2c2bf 46%, #a0a09e 68%, #828280 84%, #6c6c6a 100%
+    );
+    box-shadow:
+      0 0 0 1px rgba(255,255,255,0.2),
+      0 32px 80px rgba(0,0,0,0.85),
+      0 6px 20px rgba(0,0,0,0.5),
+      inset 0 1px 0 rgba(255,255,255,0.45),
+      inset 0 -1px 0 rgba(0,0,0,0.2);
+    cursor: grab;
+    user-select: none;
+    touch-action: none;
+    z-index: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+  }
+  .disc-wrap:active { cursor: grabbing; }
+
+  .disc-logo {
+    width: 84%;
+    height: 84%;
+    object-fit: contain;
+    object-position: center;
+    pointer-events: none;
+    display: block;
+    flex-shrink: 0;
+  }
+
+  .hero-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(56px, 10vw, 100px);
+    font-weight: 400;
+    letter-spacing: 0.18em;
+    color: var(--bone);
+    line-height: 1;
+    text-decoration: none;
+    position: relative;
+    z-index: 1;
+    transition: opacity 0.2s;
+  }
+  .hero-title:hover { opacity: 0.65; }
+
+  /* ── SPECS ── */
+  .specs {
+    background: var(--coal);
+    padding: 80px 48px;
+    display: flex;
+    justify-content: center;
+    gap: 0;
+    border-top: 1px solid rgba(240,236,228,0.06);
+    border-bottom: 1px solid rgba(240,236,228,0.06);
+  }
+
+  .spec-item {
+    padding: 0 48px;
+    border-right: 1px solid rgba(240,236,228,0.08);
+    text-align: center;
+  }
+  .spec-item:last-child { border-right: none; }
+
+  .spec-value {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 4vw, 44px);
+    font-weight: 400;
+    color: var(--bone);
+    letter-spacing: 0.06em;
+    line-height: 1;
+    margin-bottom: 12px;
+  }
+
+  .spec-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    color: var(--steel);
+    text-transform: uppercase;
+  }
+
+  @media (max-width: 768px) {
+    .specs { padding: 48px 24px; gap: 0; flex-wrap: wrap; }
+    .spec-item { padding: 20px 24px; border-right: none; border-bottom: 1px solid rgba(240,236,228,0.08); width: 50%; }
+    .spec-item:nth-child(odd) { border-right: 1px solid rgba(240,236,228,0.08); }
+    .spec-item:last-child { border-bottom: none; }
+  }
+
+  /* ── ZEBRA WRAPPER — 100vh total ── */
+  .zebra {
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+
+  .z-white {
+    flex: 1;
+    background: var(--bone);
+  }
+
+  .z-order {
+    flex: 3;
+    background: var(--coal);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 52px;
+  }
+
+  .order-heading {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(44px, 6vw, 72px);
+    font-weight: 400;
+    letter-spacing: 0.14em;
+    color: var(--bone);
+    text-align: center;
+  }
+
+  .order-circles {
+    display: flex;
+    gap: 32px;
+    align-items: center;
+  }
+
+  .order-circle {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    background: var(--bone);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-decoration: none;
+    transition: transform 0.25s, box-shadow 0.25s;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+  }
+  .order-circle:hover {
+    transform: scale(1.08);
+    box-shadow: 0 8px 36px rgba(0,0,0,0.6);
+  }
+  .order-circle:active { transform: scale(0.97); }
+
+  .order-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: var(--coal);
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    background: var(--coal);
+    padding: 52px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid rgba(240,236,228,0.08);
+  }
+
+  .footer-by {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    color: var(--bone);
+  }
+
+  .footer-socials {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  .footer-social-link {
+    font-size: 10px;
+    letter-spacing: 0.16em;
+    color: var(--steel);
+    text-decoration: none;
+    text-transform: uppercase;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+  }
+  .footer-social-link:hover { opacity: 1; }
+
+  .footer-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+  .footer-dna { display: flex; gap: 20px; align-items: center; }
+  .footer-dna span {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    color: var(--steel);
+    letter-spacing: 0.1em;
+  }
+  .footer-year { font-size: 11px; color: var(--steel); letter-spacing: 0.14em; }
+  .footer-inn  { font-size: 10px; color: var(--steel); letter-spacing: 0.1em; opacity: 0.6; }
+  .footer-oferta {
+    font-size: 10px; color: var(--steel); letter-spacing: 0.1em;
+    text-decoration: underline; text-underline-offset: 3px;
+    opacity: 0.6; transition: opacity 0.2s;
+  }
+  .footer-oferta:hover { opacity: 1; }
+
+  /* ── COOKIE BANNER ── */
+  #cookie-banner {
+    position: fixed;
+    bottom: 0; left: 0; right: 0;
+    z-index: 999;
+    background: rgba(15,15,15,0.97);
+    backdrop-filter: blur(8px);
+    border-top: 1px solid rgba(240,236,228,0.08);
+    padding: 20px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    transition: transform 0.4s ease;
+  }
+  #cookie-banner.hidden { transform: translateY(100%); }
+  .cookie-text {
+    font-size: 11px;
+    letter-spacing: 0.06em;
+    color: var(--steel);
+    line-height: 1.6;
+    max-width: 680px;
+  }
+  .cookie-text a {
+    color: var(--steel);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    opacity: 0.8;
+    transition: opacity 0.2s;
+  }
+  .cookie-text a:hover { opacity: 1; }
+  .cookie-btn {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--coal);
+    background: var(--bone);
+    border: none;
+    padding: 10px 24px;
+    cursor: pointer;
+    flex-shrink: 0;
+    transition: opacity 0.2s;
+    font-family: 'Inter', sans-serif;
+    font-weight: 400;
+  }
+  .cookie-btn:hover { opacity: 0.8; }
+
+  /* ── LEGAL FOOTER ── */
+  .footer-legal {
+    background: var(--coal);
+    border-top: 1px solid rgba(240,236,228,0.04);
+    padding: 24px 48px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .footer-legal-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+  }
+  .footer-legal-text {
+    font-size: 10px;
+    letter-spacing: 0.08em;
+    color: var(--steel);
+    opacity: 0.55;
+    line-height: 1.7;
+  }
+  .footer-legal-link {
+    font-size: 10px;
+    letter-spacing: 0.1em;
+    color: var(--steel);
+    opacity: 0.55;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: opacity 0.2s;
+  }
+  .footer-legal-link:hover { opacity: 0.9; }
+  .footer-legal-divider { color: var(--steel); opacity: 0.25; font-size: 10px; }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    nav { padding: 20px 24px; }
+    .hero { gap: 48px; }
+    .disc-wrap { width: 220px; height: 220px; }
+    .order-circle { width: 72px; height: 72px; }
+    .order-dot { width: 8px; height: 8px; }
+    footer { padding: 40px 24px; flex-direction: column; gap: 28px; align-items: flex-start; }
+    .footer-right { align-items: flex-start; }
+    .footer-socials { flex-wrap: wrap; }
+    #cookie-banner { padding: 16px 24px; flex-direction: column; align-items: flex-start; }
+    .footer-legal { padding: 20px 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV — только IZIPI слева, пасхалка -->
+<nav id="nav">
+  <a class="nav-brand" href="order.html?promo=ZZ25">izipi</a>
+</nav>
+
+<!-- HERO — 100vh black -->
+<section class="hero">
+  <div class="hero-bg-z">Z</div>
+
+  <div class="disc-wrap" id="disc">
+    <img class="disc-logo" src="ZZфон-.png" alt="ZHEGALKIN">
+  </div>
+
+  <a class="hero-title" href="about.html">IZIPI</a>
+</section>
+
+<!-- SPECS -->
+<div class="specs">
+  <div class="spec-item">
+    <div class="spec-value">2 500 ₽</div>
+    <div class="spec-label">Цена</div>
+  </div>
+  <div class="spec-item">
+    <div class="spec-value">Al</div>
+    <div class="spec-label">Алюминий</div>
+  </div>
+  <div class="spec-item">
+    <div class="spec-value">360°</div>
+    <div class="spec-label">Вращение</div>
+  </div>
+  <div class="spec-item">
+    <div class="spec-value">MagSafe</div>
+    <div class="spec-label">Крепление</div>
+  </div>
+  <div class="spec-item">
+    <div class="spec-value">25</div>
+    <div class="spec-label">Серия</div>
+  </div>
+</div>
+
+<!-- ZEBRA — 100vh: white / black-order / white -->
+<div class="zebra">
+  <div class="z-white"></div>
+
+  <div class="z-order" id="order">
+    <div class="order-heading">Заказать</div>
+    <div class="order-circles">
+      <a class="order-circle" href="order.html" aria-label="Оформить заказ">
+        <div class="order-dot"></div>
+      </a>
+      <a class="order-circle" href="order.html" aria-label="Оформить заказ">
+        <div class="order-dot"></div>
+      </a>
+    </div>
+  </div>
+
+  <div class="z-white"></div>
+</div>
+
+<!-- COOKIE BANNER -->
+<div id="cookie-banner">
+  <p class="cookie-text">
+    Мы используем файлы cookie для улучшения работы сайта. Продолжая использование сайта, вы соглашаетесь с обработкой персональных данных в соответствии с&nbsp;<a href="oferta.html#privacy">Политикой конфиденциальности</a> согласно&nbsp;ФЗ&nbsp;№152&nbsp;«О&nbsp;персональных данных».
+  </p>
+  <button class="cookie-btn" id="cookie-accept">Принять</button>
+</div>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-by">by Zhegalkin</div>
+
+  <!-- СОЦСЕТИ: добавить ссылки после создания аккаунтов -->
+
+  <div class="footer-right">
+    <div class="footer-dna">
+      <span>Ж</span><span>·</span><span>Z</span><span>·</span><span>25</span>
+    </div>
+    <div class="footer-year">2026</div>
+    <div class="footer-inn">ИНН 503826699247 · Самозанятый</div>
+    <a class="footer-oferta" href="oferta.html">Публичная оферта</a>
+  </div>
+</footer>
+
+<!-- LEGAL FOOTER (152-ФЗ) -->
+<div class="footer-legal">
+  <div class="footer-legal-row">
+    <span class="footer-legal-text">© 2026 IZIPI by ZHEGALKIN</span>
+    <span class="footer-legal-divider">·</span>
+    <span class="footer-legal-text">ИНН 503826699247 · Самозанятый</span>
+    <span class="footer-legal-divider">·</span>
+    <a class="footer-legal-link" href="oferta.html">Публичная оферта</a>
+    <span class="footer-legal-divider">·</span>
+    <a class="footer-legal-link" href="oferta.html#privacy">Политика конфиденциальности</a>
+    <span class="footer-legal-divider">·</span>
+    <a class="footer-legal-link" href="oferta.html#personal-data">Обработка персональных данных</a>
+  </div>
+  <div class="footer-legal-row">
+    <span class="footer-legal-text">
+      Персональные данные обрабатываются в соответствии с Федеральным законом № 152-ФЗ от 27.07.2006 «О персональных данных».
+      Оставляя заказ, вы даёте согласие на обработку персональных данных в целях исполнения договора купли-продажи.
+    </span>
+  </div>
+</div>
+
+<script>
+  // Cookie banner
+  const banner = document.getElementById('cookie-banner');
+  if (localStorage.getItem('izipi_cookie_accepted') === '1') {
+    banner.classList.add('hidden');
+  }
+  document.getElementById('cookie-accept').addEventListener('click', () => {
+    localStorage.setItem('izipi_cookie_accepted', '1');
+    banner.classList.add('hidden');
+  });
+
+  // Nav scroll
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => {
+    nav.classList.toggle('scrolled', window.scrollY > 60);
+  });
+
+  // ── DISC PHYSICS ──
+  const disc = document.getElementById('disc');
+  const DEFAULT_SPEED = 0.18;
+  const FRICTION      = 0.9975;
+
+  let rotation  = 0;
+  let velocity  = DEFAULT_SPEED;
+  let isDragging = false;
+  let prevAngle  = 0;
+  let prevTime   = 0;
+  let lastDelta  = 0;
+
+  function getAngle(e) {
+    const r  = disc.getBoundingClientRect();
+    const cx = r.left + r.width  / 2;
+    const cy = r.top  + r.height / 2;
+    const px = e.touches ? e.touches[0].clientX : e.clientX;
+    const py = e.touches ? e.touches[0].clientY : e.clientY;
+    return Math.atan2(py - cy, px - cx) * (180 / Math.PI);
+  }
+
+  disc.addEventListener('mousedown',  e => { isDragging = true; prevAngle = getAngle(e); prevTime = performance.now(); lastDelta = 0; velocity = 0; e.preventDefault(); }, { passive: false });
+  disc.addEventListener('touchstart', e => { isDragging = true; prevAngle = getAngle(e); prevTime = performance.now(); lastDelta = 0; velocity = 0; e.preventDefault(); }, { passive: false });
+
+  window.addEventListener('mousemove', e => {
+    if (!isDragging) return;
+    const angle = getAngle(e);
+    const now = performance.now();
+    const dt  = now - prevTime;
+    let delta = angle - prevAngle;
+    if (delta >  180) delta -= 360;
+    if (delta < -180) delta += 360;
+    rotation += delta;
+    disc.style.transform = `rotate(${rotation}deg)`;
+    if (dt > 0) lastDelta = delta * (16 / dt);
+    prevAngle = angle; prevTime = now;
+  });
+
+  window.addEventListener('touchmove', e => {
+    if (!isDragging) return;
+    const angle = getAngle(e);
+    const now = performance.now();
+    const dt  = now - prevTime;
+    let delta = angle - prevAngle;
+    if (delta >  180) delta -= 360;
+    if (delta < -180) delta += 360;
+    rotation += delta;
+    disc.style.transform = `rotate(${rotation}deg)`;
+    if (dt > 0) lastDelta = delta * (16 / dt);
+    prevAngle = angle; prevTime = now;
+  }, { passive: true });
+
+  window.addEventListener('mouseup',  () => { if (isDragging) { isDragging = false; velocity = lastDelta || DEFAULT_SPEED; } });
+  window.addEventListener('touchend', () => { if (isDragging) { isDragging = false; velocity = lastDelta || DEFAULT_SPEED; } });
+
+  (function animate() {
+    if (!isDragging) {
+      if (Math.abs(velocity) > DEFAULT_SPEED) {
+        velocity *= FRICTION;
+        if (Math.abs(velocity) <= DEFAULT_SPEED) velocity = DEFAULT_SPEED;
+      } else {
+        velocity = DEFAULT_SPEED;
+      }
+      rotation += velocity;
+      disc.style.transform = `rotate(${rotation}deg)`;
+    }
+    requestAnimationFrame(animate);
+  })();
+</script>
+
+</body>
+</html>

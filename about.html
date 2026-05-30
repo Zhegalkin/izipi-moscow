@@ -1,0 +1,407 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>О бренде — ZHEGALKIN</title>
+<meta name="description" content="ZHEGALKIN — человек, который делает вещи. Кожа, металл, механика. Основатель — Жегалкин Павел, Россия.">
+<meta property="og:title" content="О бренде — ZHEGALKIN">
+<meta property="og:description" content="ZHEGALKIN — человек, который делает вещи. Кожа, металл, механика. Основатель — Жегалкин Павел, Россия.">
+<meta property="og:image" content="https://izipi.moscow/IZIPI.jpg">
+<meta property="og:url" content="https://izipi.moscow/about.html">
+<meta property="og:type" content="website">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230f0f0f'/><text y='.9em' font-size='82' font-family='serif' fill='%23f0ece4' x='10'>Z</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700;1,400&family=Cormorant+Garamond:ital,wght@1,300&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --coal: #0f0f0f;
+    --bone: #f0ece4;
+    --graphite: #2a2a2a;
+    --steel: #6b6b6b;
+    --silver: #b8b8b8;
+  }
+
+  body {
+    background: var(--coal);
+    color: var(--bone);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+  }
+
+  /* ── HEADER ── */
+  header {
+    padding: 28px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-bottom: 1px solid rgba(240,236,228,0.06);
+    position: sticky;
+    top: 0;
+    background: rgba(15,15,15,0.95);
+    backdrop-filter: blur(8px);
+    z-index: 10;
+  }
+  .header-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 14px;
+    letter-spacing: 0.22em;
+    color: var(--bone);
+    text-decoration: none;
+  }
+  .header-order {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--steel);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+  .header-order:hover { color: var(--bone); }
+
+  /* ── HERO ── */
+  .page-hero {
+    padding: 120px 48px 80px;
+    max-width: 900px;
+    margin: 0 auto;
+    position: relative;
+  }
+
+  .page-hero-bg {
+    position: absolute;
+    right: -40px;
+    top: 40px;
+    font-family: 'Playfair Display', serif;
+    font-size: 40vw;
+    font-weight: 700;
+    color: rgba(240,236,228,0.025);
+    line-height: 1;
+    user-select: none;
+    pointer-events: none;
+    letter-spacing: -0.05em;
+  }
+
+  .eyebrow {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.28em;
+    color: var(--steel);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .eyebrow::before {
+    content: '';
+    display: block;
+    width: 32px;
+    height: 1px;
+    background: var(--steel);
+  }
+
+  .page-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(52px, 8vw, 96px);
+    font-weight: 400;
+    letter-spacing: 0.06em;
+    color: var(--bone);
+    line-height: 1;
+    position: relative;
+  }
+
+  /* ── SECTIONS ── */
+  .content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 48px 120px;
+  }
+
+  .divider {
+    width: 100%;
+    height: 1px;
+    background: rgba(240,236,228,0.06);
+    margin: 80px 0;
+  }
+
+  .section-grid {
+    display: grid;
+    grid-template-columns: 200px 1fr;
+    gap: 0 64px;
+    align-items: start;
+  }
+
+  .section-label {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.22em;
+    color: var(--steel);
+    text-transform: uppercase;
+    padding-top: 6px;
+    line-height: 1.6;
+  }
+
+  .section-body h2 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 400;
+    letter-spacing: 0.04em;
+    color: var(--bone);
+    line-height: 1.2;
+    margin-bottom: 28px;
+  }
+
+  .section-body p {
+    font-size: 15px;
+    font-weight: 300;
+    color: var(--silver);
+    line-height: 1.9;
+    margin-bottom: 20px;
+    max-width: 560px;
+  }
+
+  .section-body p:last-child { margin-bottom: 0; }
+
+  /* ── DNA BLOCK ── */
+  .dna-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+    margin-top: 40px;
+  }
+
+  .dna-card {
+    background: var(--graphite);
+    padding: 40px 32px;
+  }
+
+  .dna-symbol {
+    font-family: 'Playfair Display', serif;
+    font-size: 56px;
+    font-weight: 400;
+    color: var(--bone);
+    line-height: 1;
+    margin-bottom: 20px;
+    letter-spacing: -0.02em;
+  }
+
+  .dna-title {
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.2em;
+    color: var(--steel);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  .dna-text {
+    font-size: 13px;
+    font-weight: 300;
+    color: var(--silver);
+    line-height: 1.8;
+  }
+
+  /* ── PRODUCT BLOCK ── */
+  .product-block {
+    background: var(--bone);
+    padding: 80px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 60px;
+    margin: 80px -48px 0;
+  }
+
+  .product-block-left h3 {
+    font-family: 'Playfair Display', serif;
+    font-size: 36px;
+    font-weight: 400;
+    color: var(--coal);
+    letter-spacing: 0.06em;
+    margin-bottom: 16px;
+  }
+
+  .product-block-left p {
+    font-size: 14px;
+    font-weight: 300;
+    color: #666;
+    line-height: 1.8;
+    max-width: 400px;
+  }
+
+  .product-block-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 20px;
+    flex-shrink: 0;
+  }
+
+  .product-price {
+    font-family: 'Playfair Display', serif;
+    font-size: 44px;
+    font-weight: 400;
+    color: var(--coal);
+    letter-spacing: 0.04em;
+  }
+
+  .product-btn {
+    display: inline-block;
+    background: var(--coal);
+    color: var(--bone);
+    padding: 16px 44px;
+    font-family: 'Playfair Display', serif;
+    font-size: 12px;
+    letter-spacing: 0.22em;
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: all 0.2s;
+  }
+  .product-btn:hover { background: #2a2a2a; transform: translateY(-1px); }
+
+  /* ── FOOTER ── */
+  footer {
+    padding: 60px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid rgba(240,236,228,0.08);
+  }
+
+  .footer-by {
+    font-family: 'Cormorant Garamond', serif;
+    font-style: italic;
+    font-weight: 300;
+    font-size: 22px;
+    letter-spacing: 0.08em;
+    color: var(--bone);
+  }
+
+  .footer-right {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 6px;
+  }
+  .footer-dna {
+    display: flex;
+    gap: 20px;
+    align-items: center;
+  }
+  .footer-dna span {
+    font-family: 'Playfair Display', serif;
+    font-size: 16px;
+    color: var(--steel);
+    letter-spacing: 0.1em;
+  }
+  .footer-year {
+    font-size: 11px;
+    color: var(--steel);
+    letter-spacing: 0.14em;
+  }
+
+  /* ── RESPONSIVE ── */
+  @media (max-width: 768px) {
+    header { padding: 20px 24px; }
+    .page-hero { padding: 80px 24px 60px; }
+    .content { padding: 0 24px 80px; }
+    .section-grid { grid-template-columns: 1fr; gap: 20px; }
+    .dna-grid { grid-template-columns: 1fr; }
+    .product-block { flex-direction: column; padding: 60px 24px; margin: 60px -24px 0; }
+    .product-block-right { align-items: flex-start; }
+    footer { padding: 40px 24px; flex-direction: column; gap: 24px; align-items: flex-start; }
+    .footer-right { align-items: flex-start; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <a class="header-brand" href="index.html">IZIPI</a>
+  <a class="header-order" href="order.html">Заказать</a>
+</header>
+
+<div class="page-hero">
+  <div class="page-hero-bg">Z</div>
+  <div class="eyebrow">О бренде</div>
+  <h1 class="page-title">ZHEGALKIN</h1>
+</div>
+
+<div class="content">
+
+  <div class="section-grid">
+    <div class="section-label">Манифест</div>
+    <div class="section-body">
+      <h2>Делать вещи<br>руками.</h2>
+      <p>ZHEGALKIN — это не компания. Это человек, который делает вещи. Кожа, металл, дерево, механика. Каждое изделие проходит через руки от первого чертежа до последней детали.</p>
+      <p>Бренд основан Жегалкиным Павлом — мастером из России. Самозанятый. Токарный станок, слесарный верстак, точные инструменты.</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-grid">
+    <div class="section-label">История</div>
+    <div class="section-body">
+      <h2>Как появился<br>IZIPI</h2>
+      <p>Идея пришла просто: телефон лежит на столе и не делает ничего интересного. А что если он сможет вращаться? Не в чехле, не на подставке — свободно, на подшипнике, как юла.</p>
+      <p>Первый прототип был выточен на токарном станке из алюминиевого прутка. Внутрь запрессован подшипник, снаружи — MagSafe-кольцо. Телефон прилипает магнитом и начинает крутиться.</p>
+      <p>Первый экземпляр серии 25 пронумерован вручную. Гравировка появится позже. Но в самом начале — цифра, нацарапанная лично.</p>
+    </div>
+  </div>
+
+  <div class="divider"></div>
+
+  <div class="section-grid">
+    <div class="section-label">ДНК бренда</div>
+    <div class="section-body">
+      <h2>Ж · Z · 25</h2>
+      <p>Три символа, которые пронизывают всё.</p>
+    </div>
+  </div>
+
+  <div class="dna-grid">
+    <div class="dna-card">
+      <div class="dna-symbol">Ж · Z</div>
+      <div class="dna-title">Две буквы — один знак</div>
+      <div class="dna-text">Ж и Z — одна и та же буква в двух алфавитах. Между двумя мирами. Логотип — это монограмма: Жегалкин Павел Николаевич в одном знаке.</div>
+    </div>
+    <div class="dna-card">
+      <div class="dna-symbol">25</div>
+      <div class="dna-title">Число</div>
+      <div class="dna-text">Дом 25А — вырос там. 2Pac — 2-5. 02.07.2002 — дата рождения, 2+5=7. Число, которое везде. Первая серия называется 25.</div>
+    </div>
+    <div class="dna-card">
+      <div class="dna-symbol" style="font-size:32px; padding-top: 8px;">2026</div>
+      <div class="dna-title">Начало</div>
+      <div class="dna-text">Патент на полезную модель. Регистрация товарного знака. Первые продажи. Всё это в один год — в 23.</div>
+    </div>
+  </div>
+
+  <div class="product-block">
+    <div class="product-block-left">
+      <h3>IZIPI</h3>
+      <p>Алюминиевый диск с MagSafe-кольцом и подшипником внутри. Крепится к iPhone магнитом. Телефон свободно вращается на любой поверхности. Серия 25 — лимитированный тираж.</p>
+    </div>
+    <div class="product-block-right">
+      <div class="product-price">2 500 ₽</div>
+      <a class="product-btn" href="order.html">Заказать</a>
+    </div>
+  </div>
+
+</div>
+
+<footer>
+  <div class="footer-by">by Zhegalkin</div>
+  <div class="footer-right">
+    <div class="footer-dna">
+      <span>Ж</span><span>·</span><span>Z</span><span>·</span><span>25</span>
+    </div>
+    <div class="footer-year">2026</div>
+  </div>
+</footer>
+
+</body>
+</html>

@@ -1,0 +1,579 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>IZIPI — Активация</title>
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><rect width='100' height='100' fill='%230f0f0f'/><text y='.9em' font-size='82' font-family='serif' fill='%23f0ece4' x='10'>Z</text></svg>">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,400;0,700&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --coal:     #0f0f0f;
+    --bone:     #f0ece4;
+    --graphite: #1a1a1a;
+    --steel:    #6b6b6b;
+    --dim:      rgba(240,236,228,0.06);
+  }
+  html, body {
+    background: var(--coal);
+    color: var(--bone);
+    font-family: 'Inter', sans-serif;
+    font-weight: 300;
+    min-height: 100%;
+  }
+
+  /* ── NAV ── */
+  nav {
+    padding: 28px 48px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .nav-brand {
+    font-family: 'Playfair Display', serif;
+    font-size: 13px;
+    letter-spacing: 0.22em;
+    color: var(--bone);
+    text-decoration: none;
+    opacity: 0.6;
+    transition: opacity 0.2s;
+  }
+  .nav-brand:hover { opacity: 1; }
+  .nav-step {
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    color: var(--steel);
+    text-transform: uppercase;
+  }
+
+  /* ── LAYOUT ── */
+  .page {
+    max-width: 480px;
+    margin: 0 auto;
+    padding: 60px 24px 80px;
+    display: flex;
+    flex-direction: column;
+    gap: 48px;
+  }
+
+  /* ── STEPS ── */
+  .steps {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+  .step-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--dim);
+    transition: background 0.3s;
+  }
+  .step-dot.active { background: var(--bone); }
+  .step-dot.done   { background: rgba(240,236,228,0.3); }
+
+  /* ── SCREEN ── */
+  .screen { display: none; flex-direction: column; gap: 32px; }
+  .screen.active { display: flex; }
+
+  .screen-title {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(32px, 6vw, 48px);
+    font-weight: 400;
+    letter-spacing: 0.1em;
+    line-height: 1.15;
+  }
+  .screen-subtitle {
+    font-size: 13px;
+    letter-spacing: 0.06em;
+    color: var(--steel);
+    line-height: 1.7;
+  }
+
+  /* ── FORM ── */
+  .form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .form-label {
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: var(--steel);
+  }
+  .form-input {
+    background: var(--graphite);
+    border: 1px solid rgba(240,236,228,0.1);
+    color: var(--bone);
+    font-family: 'Playfair Display', serif;
+    font-size: 20px;
+    letter-spacing: 0.08em;
+    padding: 16px 20px;
+    width: 100%;
+    outline: none;
+    transition: border-color 0.2s;
+    -webkit-appearance: none;
+    border-radius: 0;
+  }
+  .form-input:focus { border-color: rgba(240,236,228,0.35); }
+  .form-input::placeholder { color: rgba(240,236,228,0.2); }
+
+  .form-input.code-input {
+    font-size: 16px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+  }
+
+  /* ── BUTTON ── */
+  .btn {
+    background: var(--bone);
+    color: var(--coal);
+    border: none;
+    font-family: 'Inter', sans-serif;
+    font-size: 11px;
+    font-weight: 400;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    padding: 18px 40px;
+    cursor: pointer;
+    transition: opacity 0.2s;
+    align-self: flex-start;
+  }
+  .btn:hover   { opacity: 0.82; }
+  .btn:active  { opacity: 0.65; }
+  .btn:disabled { opacity: 0.3; cursor: default; }
+
+  .btn-ghost {
+    background: none;
+    color: var(--steel);
+    border: 1px solid rgba(240,236,228,0.12);
+    padding: 14px 32px;
+  }
+
+  /* ── GYRO CANVAS ── */
+  #gyro-wrap {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 1;
+    max-width: 320px;
+    align-self: center;
+    border: 1px solid var(--dim);
+    background: var(--graphite);
+    overflow: hidden;
+  }
+  #gyro-canvas { display: block; width: 100%; height: 100%; }
+  #gyro-hint {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    transition: opacity 0.5s;
+  }
+  #gyro-hint p {
+    font-size: 11px;
+    letter-spacing: 0.14em;
+    color: var(--steel);
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 1.8;
+    padding: 0 24px;
+  }
+  #gyro-counter {
+    font-family: 'Playfair Display', serif;
+    font-size: 48px;
+    letter-spacing: 0.05em;
+    color: var(--bone);
+    text-align: center;
+    line-height: 1;
+  }
+  #gyro-counter small {
+    display: block;
+    font-family: 'Inter', sans-serif;
+    font-size: 10px;
+    letter-spacing: 0.2em;
+    color: var(--steel);
+    text-transform: uppercase;
+    margin-top: 8px;
+  }
+  #gyro-counter .target { color: rgba(240,236,228,0.25); }
+
+  /* ── SUCCESS ── */
+  .success-disc {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    background: radial-gradient(circle at 36% 30%,
+      #f8f8f6 0%, #e0e0dd 22%, #c2c2bf 46%, #a0a09e 68%, #828280 84%, #6c6c6a 100%
+    );
+    box-shadow: 0 16px 48px rgba(0,0,0,0.8);
+    align-self: center;
+    animation: spin-slow 8s linear infinite;
+  }
+  @keyframes spin-slow { to { transform: rotate(360deg); } }
+
+  .success-name {
+    font-family: 'Playfair Display', serif;
+    font-size: 28px;
+    letter-spacing: 0.1em;
+    text-align: center;
+  }
+  .success-text {
+    font-size: 12px;
+    letter-spacing: 0.1em;
+    color: var(--steel);
+    text-align: center;
+    line-height: 1.8;
+  }
+
+  /* ── ERROR ── */
+  .error-msg {
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: #c0504a;
+    display: none;
+  }
+  .error-msg.visible { display: block; }
+
+  @media (max-width: 480px) {
+    nav { padding: 20px 20px; }
+    .page { padding: 40px 20px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <a class="nav-brand" href="index.html">IZIPI</a>
+  <span class="nav-step" id="nav-step">Активация</span>
+</nav>
+
+<div class="page">
+
+  <!-- ШАГИ -->
+  <div class="steps">
+    <div class="step-dot active" id="dot-1"></div>
+    <div class="step-dot" id="dot-2"></div>
+    <div class="step-dot" id="dot-3"></div>
+    <div class="step-dot" id="dot-4"></div>
+  </div>
+
+  <!-- ШАГ 1: Код активации -->
+  <div class="screen active" id="screen-1">
+    <h1 class="screen-title">Введи<br>код</h1>
+    <p class="screen-subtitle">
+      Код пришёл на почту при оформлении заказа.<br>
+      Он уникален для каждого IZIPI.
+    </p>
+    <div class="form-group">
+      <label class="form-label" for="input-code">Код активации</label>
+      <input class="form-input code-input" id="input-code" type="text"
+             placeholder="IZIPI-001-Z25" maxlength="20" autocomplete="off" spellcheck="false">
+      <span class="error-msg" id="err-code">Неверный код — проверь письмо</span>
+    </div>
+    <button class="btn" id="btn-1">Продолжить</button>
+  </div>
+
+  <!-- ШАГ 2: Имя и город -->
+  <div class="screen" id="screen-2">
+    <h1 class="screen-title">Как тебя<br>зовут</h1>
+    <p class="screen-subtitle">
+      Твоё имя появится на карте рядом с точкой.<br>
+      Можно написать только имя.
+    </p>
+    <div class="form-group">
+      <label class="form-label" for="input-name">Имя</label>
+      <input class="form-input" id="input-name" type="text"
+             placeholder="Иван" maxlength="40" autocomplete="given-name">
+    </div>
+    <div class="form-group">
+      <label class="form-label" for="input-city">Город</label>
+      <input class="form-input" id="input-city" type="text"
+             placeholder="Москва" maxlength="60" autocomplete="address-level2">
+    </div>
+    <button class="btn" id="btn-2">Продолжить</button>
+  </div>
+
+  <!-- ШАГ 3: Gyro Auth — рисуем круги -->
+  <div class="screen" id="screen-3">
+    <h1 class="screen-title">Закрути<br>телефон</h1>
+    <p class="screen-subtitle">
+      Положи палец на экран и вращай телефон как IZIPI.<br>
+      Нужно нарисовать 25 слоёв.
+    </p>
+
+    <div id="gyro-wrap">
+      <canvas id="gyro-canvas"></canvas>
+      <div id="gyro-hint">
+        <p>Положи палец<br>на экран</p>
+      </div>
+    </div>
+
+    <div id="gyro-counter">
+      <span id="layer-count">0</span><span class="target"> / 25</span>
+      <small>Слоёв нарисовано</small>
+    </div>
+
+    <div style="display:flex;gap:12px;flex-wrap:wrap;">
+      <button class="btn" id="btn-3" disabled>Активировать</button>
+      <button class="btn btn-ghost" id="btn-3-skip">Пропустить</button>
+    </div>
+  </div>
+
+  <!-- ШАГ 4: Успех -->
+  <div class="screen" id="screen-4">
+    <div class="success-disc"></div>
+    <h2 class="screen-title" style="text-align:center" id="success-name">—</h2>
+    <p class="success-text">
+      Паша.IZIPI активирован.<br>
+      Он появился на карте.
+    </p>
+    <a class="btn" style="align-self:center;text-decoration:none" href="world.html">
+      Открыть карту
+    </a>
+  </div>
+
+</div>
+
+<script>
+// ── ДАННЫЕ ──
+// ЗАМЕНИ на реальный URL после настройки Google Form
+const GOOGLE_FORM_URL = 'https://docs.google.com/forms/d/e/FORM_ID/formResponse';
+// ID полей формы (после создания в Google Forms)
+const FIELD_CODE  = 'entry.XXXXXXXXX';
+const FIELD_NAME  = 'entry.XXXXXXXXX';
+const FIELD_CITY  = 'entry.XXXXXXXXX';
+
+// Валидные коды (потом тут будет проверка через бэкенд или Apps Script)
+// На старте — просто список, который ты контролируешь
+const VALID_CODES = [
+  'IZIPI-001-Z25',
+  'IZIPI-002-Z25',
+  'IZIPI-003-Z25',
+  // ... добавляй по мере продаж
+];
+
+// ── СОСТОЯНИЕ ──
+let state = { step: 1, code: '', name: '', city: '', layers: 0 };
+
+// ── НАВИГАЦИЯ ──
+function goTo(step) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(`screen-${step}`).classList.add('active');
+  document.querySelectorAll('.step-dot').forEach((d, i) => {
+    d.classList.toggle('active', i + 1 === step);
+    d.classList.toggle('done',   i + 1 < step);
+  });
+  state.step = step;
+  document.getElementById('nav-step').textContent =
+    ['', 'Код', 'Имя', 'Верификация', 'Готово'][step];
+}
+
+// ── ШАГ 1: Код ──
+document.getElementById('btn-1').addEventListener('click', () => {
+  const code = document.getElementById('input-code').value.trim().toUpperCase();
+  const err  = document.getElementById('err-code');
+
+  if (!VALID_CODES.includes(code) && VALID_CODES.length > 0) {
+    err.classList.add('visible');
+    return;
+  }
+  err.classList.remove('visible');
+  state.code = code;
+  goTo(2);
+});
+document.getElementById('input-code').addEventListener('keydown', e => {
+  if (e.key === 'Enter') document.getElementById('btn-1').click();
+});
+
+// ── ШАГ 2: Имя и город ──
+document.getElementById('btn-2').addEventListener('click', () => {
+  const name = document.getElementById('input-name').value.trim();
+  const city = document.getElementById('input-city').value.trim();
+  if (!name || !city) return;
+  state.name = name;
+  state.city = city;
+  goTo(3);
+  initGyro();
+});
+
+// ── ШАГ 3: Gyro Auth ──
+const canvas = document.getElementById('gyro-canvas');
+const ctx    = canvas.getContext('2d');
+const hint   = document.getElementById('gyro-hint');
+const layerEl = document.getElementById('layer-count');
+const btn3   = document.getElementById('btn-3');
+
+let touching = false;
+let gyroActive = false;
+let totalAngle = 0;
+let lastBeta = null, lastGamma = null;
+let layers = 0;
+
+const LAYER_ANGLE = 360 * 2; // 2 оборота = 1 слой (на экране)
+
+function resizeCanvas() {
+  const w = canvas.offsetWidth;
+  canvas.width = w;
+  canvas.height = w;
+}
+
+function initGyro() {
+  resizeCanvas();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+
+function drawSpiral() {
+  const cx = canvas.width  / 2;
+  const cy = canvas.height / 2;
+  const maxR = canvas.width * 0.45;
+  const a  = totalAngle * (Math.PI / 180);
+  const r  = (totalAngle / (LAYER_ANGLE * 25)) * maxR;
+  const x  = cx + r * Math.cos(a);
+  const y  = cy + r * Math.sin(a);
+
+  if (totalAngle === 0) {
+    ctx.beginPath();
+    ctx.moveTo(cx, cy);
+  }
+
+  const hue = (totalAngle / (LAYER_ANGLE * 25)) * 60; // 0..60 — тёплые тона
+  ctx.strokeStyle = `rgba(240, 236, 228, ${0.3 + (totalAngle / (LAYER_ANGLE * 25)) * 0.6})`;
+  ctx.lineWidth   = 0.8;
+  ctx.lineTo(x, y);
+  ctx.stroke();
+  ctx.beginPath();
+  ctx.moveTo(x, y);
+}
+
+// Обработка касания
+canvas.addEventListener('touchstart', e => {
+  touching = true;
+  hint.style.opacity = '0';
+  e.preventDefault();
+}, { passive: false });
+canvas.addEventListener('mousedown', () => {
+  touching = true;
+  hint.style.opacity = '0';
+});
+window.addEventListener('touchend', () => touching = false);
+window.addEventListener('mouseup',  () => touching = false);
+
+// Gyroscope
+function requestGyro() {
+  if (typeof DeviceOrientationEvent !== 'undefined' &&
+      typeof DeviceOrientationEvent.requestPermission === 'function') {
+    DeviceOrientationEvent.requestPermission()
+      .then(r => { if (r === 'granted') startGyro(); })
+      .catch(() => startMouseFallback());
+  } else {
+    startGyro();
+  }
+}
+
+function startGyro() {
+  window.addEventListener('deviceorientation', e => {
+    if (!touching) return;
+    const beta  = e.beta  || 0;
+    const gamma = e.gamma || 0;
+    if (lastBeta === null) { lastBeta = beta; lastGamma = gamma; return; }
+
+    const dBeta  = beta  - lastBeta;
+    const dGamma = gamma - lastGamma;
+    const delta  = Math.sqrt(dBeta * dBeta + dGamma * dGamma);
+
+    if (delta > 0.5 && delta < 30) {
+      totalAngle += delta * 2;
+      drawSpiral();
+      const newLayers = Math.floor(totalAngle / LAYER_ANGLE);
+      if (newLayers !== layers) {
+        layers = newLayers;
+        layerEl.textContent = Math.min(layers, 25);
+        if (layers >= 25) {
+          btn3.disabled = false;
+          btn3.textContent = 'Активировать';
+        }
+      }
+    }
+    lastBeta = beta; lastGamma = gamma;
+  });
+}
+
+// Fallback — мышью/пальцем рисуем прямо на canvas
+function startMouseFallback() {
+  let prevX = null, prevY = null;
+  function onMove(e) {
+    if (!touching) return;
+    const rect = canvas.getBoundingClientRect();
+    const cx   = canvas.width / 2;
+    const cy   = canvas.height / 2;
+    const px   = ((e.touches ? e.touches[0].clientX : e.clientX) - rect.left) * (canvas.width / rect.width);
+    const py   = ((e.touches ? e.touches[0].clientY : e.clientY) - rect.top)  * (canvas.height / rect.height);
+    if (prevX !== null) {
+      const dx = px - prevX, dy = py - prevY;
+      const angle = Math.atan2(dy, dx) * (180 / Math.PI);
+      const dist  = Math.sqrt(dx*dx + dy*dy);
+      if (dist > 0.5) {
+        totalAngle += dist * 0.5;
+        drawSpiral();
+        const newLayers = Math.floor(totalAngle / LAYER_ANGLE);
+        if (newLayers !== layers) {
+          layers = newLayers;
+          layerEl.textContent = Math.min(layers, 25);
+          if (layers >= 25) { btn3.disabled = false; }
+        }
+      }
+    }
+    prevX = px; prevY = py;
+  }
+  canvas.addEventListener('mousemove', onMove);
+  canvas.addEventListener('touchmove', onMove, { passive: true });
+}
+
+function initGyro() {
+  resizeCanvas();
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
+  requestGyro();
+  startMouseFallback(); // всегда включён как fallback
+}
+
+// Пропустить gyro
+document.getElementById('btn-3-skip').addEventListener('click', () => submitActivation());
+
+// Активировать после gyro
+btn3.addEventListener('click', () => submitActivation());
+
+// ── ОТПРАВКА В GOOGLE FORMS ──
+function submitActivation() {
+  // Отправляем через скрытый iframe чтобы не было CORS redirect
+  const params = new URLSearchParams({
+    [FIELD_CODE]: state.code,
+    [FIELD_NAME]: state.name,
+    [FIELD_CITY]: state.city,
+  });
+
+  const iframe = document.createElement('iframe');
+  iframe.style.display = 'none';
+  document.body.appendChild(iframe);
+
+  // Попытка отправки (работает если URL правильный)
+  try {
+    fetch(GOOGLE_FORM_URL, {
+      method: 'POST',
+      mode: 'no-cors',
+      headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+      body: params.toString()
+    });
+  } catch(e) {}
+
+  // Показать успех в любом случае
+  document.getElementById('success-name').textContent = state.name;
+  goTo(4);
+}
+</script>
+
+</body>
+</html>
