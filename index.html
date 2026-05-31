@@ -143,16 +143,14 @@
 
   .disc-logo {
     position: absolute;
-    top: 54%;
-    left: 54%;
+    top: 52%;
+    left: 56%;
     transform: translate(-50%, -50%);
-    width: 110%;
-    height: 110%;
+    width: 88%;
+    height: 88%;
     object-fit: contain;
     mix-blend-mode: multiply;
     pointer-events: none;
-    display: block;
-    flex-shrink: 0;
   }
 
   .hero-title {
@@ -264,6 +262,38 @@
   .order-circle:hover {
     transform: scale(1.08);
     box-shadow: 0 8px 36px rgba(0,0,0,0.6);
+  }
+
+  /* ── SHELL BUTTON ── */
+  .shell-btn {
+    background: radial-gradient(circle at 38% 28%,
+      #e8f4ff 0%, #b8d8f0 12%, #7ab0d8 28%, #4a88c0 44%,
+      #2a60a0 58%, #1a4880 72%, #0e3060 85%, #081c40 100%);
+    box-shadow: 0 0 0 1px rgba(180,220,255,0.3), 0 6px 28px rgba(0,20,80,0.6), inset 0 2px 0 rgba(255,255,255,0.5);
+    position: relative;
+    overflow: hidden;
+  }
+  .shell-btn:hover {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 1px rgba(180,220,255,0.4), 0 10px 40px rgba(20,80,200,0.7), inset 0 2px 0 rgba(255,255,255,0.5);
+  }
+  .shell-inner {
+    width: 100%; height: 100%;
+    position: absolute;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 30% 25%, rgba(255,255,255,0.5) 0%, transparent 35%),
+      conic-gradient(from 200deg at 50% 50%,
+        transparent 0deg,
+        rgba(180,220,255,0.12) 40deg,
+        rgba(255,255,255,0.18) 80deg,
+        rgba(120,180,240,0.1) 120deg,
+        transparent 160deg,
+        rgba(180,220,255,0.08) 200deg,
+        rgba(255,255,255,0.12) 250deg,
+        transparent 300deg,
+        transparent 360deg);
+    border-radius: 50%;
   }
   .order-circle:active { transform: scale(0.97); }
 
@@ -460,11 +490,11 @@ if(localStorage.getItem('cookie_consent')==='all')loadGA();
   <div class="z-order" id="order">
     <div class="order-heading">Заказать</div>
     <div class="order-circles">
-      <a class="order-circle" href="order.html" aria-label="Оформить заказ">
-        <div class="order-dot"></div>
+      <a class="order-circle shell-btn" href="order.html" aria-label="Оформить заказ">
+        <div class="shell-inner"></div>
       </a>
-      <a class="order-circle" href="order.html" aria-label="Оформить заказ">
-        <div class="order-dot"></div>
+      <a class="order-circle shell-btn" href="order.html" aria-label="Оформить заказ">
+        <div class="shell-inner"></div>
       </a>
     </div>
   </div>
