@@ -86,15 +86,16 @@
     border-radius: 50%;
     flex-shrink: 0;
     position: relative;
-    background: radial-gradient(circle at 36% 30%,
-      #f8f8f6 0%, #e0e0dd 22%, #c2c2bf 46%, #a0a09e 68%, #828280 84%, #6c6c6a 100%
+    background: radial-gradient(circle at 38% 28%,
+      #e8f4ff 0%, #b8d8f0 12%, #7ab0d8 28%, #4a88c0 44%,
+      #2a60a0 58%, #1a4880 72%, #0e3060 85%, #081c40 100%
     );
     box-shadow:
-      0 0 0 1px rgba(255,255,255,0.2),
-      0 32px 80px rgba(0,0,0,0.85),
-      0 6px 20px rgba(0,0,0,0.5),
-      inset 0 1px 0 rgba(255,255,255,0.45),
-      inset 0 -1px 0 rgba(0,0,0,0.2);
+      0 0 0 1px rgba(180,220,255,0.35),
+      0 32px 80px rgba(0,0,0,0.9),
+      0 6px 20px rgba(0,10,40,0.6),
+      inset 0 3px 0 rgba(255,255,255,0.6),
+      inset 0 -1px 0 rgba(0,0,0,0.3);
     cursor: grab;
     user-select: none;
     touch-action: none;
@@ -103,6 +104,40 @@
     align-items: center;
     justify-content: center;
     overflow: hidden;
+  }
+  .disc-wrap::before {
+    content: '';
+    position: absolute;
+    top: 8%; left: 15%;
+    width: 38%; height: 22%;
+    background: rgba(255,255,255,0.5);
+    border-radius: 50%;
+    filter: blur(10px);
+    transform: rotate(-20deg);
+    pointer-events: none;
+  }
+
+  /* ── GLOW behind disc ── */
+  #disc-glow {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(60,140,255,0.18) 0%, rgba(20,80,200,0.08) 40%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+    transition: opacity 0.4s ease;
+    opacity: 0.4;
+  }
+
+  /* ── Z FLASH ── */
+  .hero-bg-z {
+    transition: color 2.5s ease, text-shadow 2.5s ease;
+  }
+  .hero-bg-z.z-flash {
+    color: rgba(40,120,255,0.18);
+    text-shadow: 0 0 120px rgba(40,120,255,0.5), 0 0 300px rgba(20,80,200,0.3);
+    transition: color 0.15s ease, text-shadow 0.15s ease;
   }
   .disc-wrap:active { cursor: grabbing; }
 
@@ -407,7 +442,8 @@ if(localStorage.getItem('cookie_consent')==='all')loadGA();
 
 <!-- HERO — 100vh black -->
 <section class="hero">
-  <div class="hero-bg-z">Z</div>
+  <div class="hero-bg-z" id="hero-z">Z</div>
+  <div id="disc-glow"></div>
 
   <div class="disc-wrap" id="disc">
     <img class="disc-logo" src="ZZфон-.png" alt="ZHEGALKIN">
@@ -550,6 +586,10 @@ if(localStorage.getItem('cookie_consent')==='all')loadGA();
   window.addEventListener('mouseup',  () => { if (isDragging) { isDragging = false; velocity = lastDelta || DEFAULT_SPEED; } });
   window.addEventListener('touchend', () => { if (isDragging) { isDragging = false; velocity = lastDelta || DEFAULT_SPEED; } });
 
+  const glow  = document.getElementById('disc-glow');
+  const heroZ = document.getElementById('hero-z');
+  let zFlashing = false;
+
   (function animate() {
     if (!isDragging) {
       if (Math.abs(velocity) > DEFAULT_SPEED) {
@@ -561,6 +601,26 @@ if(localStorage.getItem('cookie_consent')==='all')loadGA();
       rotation += velocity;
       disc.style.transform = `rotate(${rotation}deg)`;
     }
+
+    // Glow intensity based on speed
+    const speed = Math.abs(isDragging ? lastDelta : velocity);
+    const intensity = Math.min(1, (speed - DEFAULT_SPEED) / 8);
+    const glowOpacity = 0.4 + intensity * 1.4;
+    const glowSize = 600 + intensity * 400;
+    glow.style.opacity = glowOpacity;
+    glow.style.width  = glowSize + 'px';
+    glow.style.height = glowSize + 'px';
+
+    // Z flash when spun fast
+    if (speed > 6 && !zFlashing) {
+      zFlashing = true;
+      heroZ.classList.add('z-flash');
+      setTimeout(() => {
+        heroZ.classList.remove('z-flash');
+        setTimeout(() => { zFlashing = false; }, 2500);
+      }, 2500);
+    }
+
     requestAnimationFrame(animate);
   })();
 </script>
