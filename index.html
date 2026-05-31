@@ -107,8 +107,12 @@
   .disc-wrap:active { cursor: grabbing; }
 
   .disc-logo {
-    width: 84%;
-    height: 84%;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 96%;
+    height: 96%;
     object-fit: contain;
     object-position: center;
     pointer-events: none;
@@ -406,29 +410,6 @@
   <a class="hero-title" href="about.html">IZIPI</a>
 </section>
 
-<!-- SPECS -->
-<div class="specs">
-  <div class="spec-item">
-    <div class="spec-value">2 500 ₽</div>
-    <div class="spec-label">Цена</div>
-  </div>
-  <div class="spec-item">
-    <div class="spec-value">Al</div>
-    <div class="spec-label">Алюминий</div>
-  </div>
-  <div class="spec-item">
-    <div class="spec-value">360°</div>
-    <div class="spec-label">Вращение</div>
-  </div>
-  <div class="spec-item">
-    <div class="spec-value">MagSafe</div>
-    <div class="spec-label">Крепление</div>
-  </div>
-  <div class="spec-item">
-    <div class="spec-value">25</div>
-    <div class="spec-label">Серия</div>
-  </div>
-</div>
 
 <!-- ZEBRA — 100vh: white / black-order / white -->
 <div class="zebra">
@@ -464,9 +445,6 @@
   <!-- СОЦСЕТИ: добавить ссылки после создания аккаунтов -->
 
   <div class="footer-right">
-    <div class="footer-dna">
-      <span>Ж</span><span>·</span><span>Z</span><span>·</span><span>25</span>
-    </div>
     <div class="footer-year">2026</div>
     <div class="footer-inn">ИНН 503826699247 · Самозанятый</div>
     <a class="footer-oferta" href="oferta.html">Публичная оферта</a>
