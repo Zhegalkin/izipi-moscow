@@ -572,33 +572,60 @@ if(localStorage.getItem('cookie_consent')==='all')loadGA();
 </div>
 
 <script>
-  // ── CURSOR: логотип + тающий след 2A (только десктоп) ──
+  // ── CURSOR TRAIL — canvas comet (только десктоп) ──
   if (window.matchMedia('(hover: hover) and (pointer: fine)').matches) {
-    const LOGO_B64 = 'iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAFlUlEQVR42pVWbWhTZxR+TnKTpk26mqao3VhruzAZLlIsqDUIVdgG6qzi6gcMNlihToYg84841oKCMnGgo6CZ4hSyuoUyYVaqDavO1hobpa2tacUmNqVpS9N0TWOqjcmzH7uVrJuyvXA5l8O55z3nOR/PBQCQFJKC/3FIav5F9w8fMs9ACyAlInyVYxFJqe/FABYDGAPgFxGS/BDA27OzsxN6vf5HkNSRzGhpaVFeFQlJTZpeQ/J9kj8MDQ3Vk/xUtdk3Ozvb6XK5ricSie9JGjQAtoyPj58pLy+/SPLA4OCgWY1Eq0KnnYta1dtIHpyZmdnb0NCQqdVqTQCGSa4DUH3o0KHnJSUluYqiDLhcroQGQE48HrcePnx4aSAQ+LigoODUsWPHjCKSFBGqMkWyhOSRSCRS09fXt+ro0aOJhQsXFuXn5/c1NjZ6AXx55MiRZHFxscFqtfb09fXVVVZWpjA5ObmEpMPr9Xbl5OTcD4fD3SRPkSwkWUByM8lvk8lkR3Nzc/e1a9euNTQ0NJ88efIOyfaxsbHFJLcEAoEBu93uI9kxPT29PK2mwOXLl80kG7du3TpYWFg4HggEup4+feqOxWK/PXjwoKu2tvZhVVXVnfb29jaSt3bu3OmZmprqIblNdXR+9+7djw8cOOAnefxvzkkqqvziypUrPgDPReRpbm7umNlsngIQ3bFjhy8ej98l2Xrw4MG7x48f95E8p35XSLLVYrE8vnr1ai/JD+dq96I1VcWKUCh0z2g0PgFA9Zmtq6vzkbxB8szIyEibzWbrnZmZ6SFZLiIguaGjo+M+gMjw8LCHpDV9TjRpff/YYrGEdDrdtIgAQOLEiRP9e/bsmQ4Gg18B8DmdzjdKS0uzDAbDXYfD0UYSAF5va2vLFJEMRVGIl03f6dOndSSdK1eu/AMAKyoqfCS9ExMTH6h2v9rt9qFLly49IvlJ2gao2bt37zCAJx6Pp4vkpnSINGpva6qrqxMAJvV6fbZOp4s5nc4EAJfFYrlK0jo+Pp7r9/uTq1evjgDoIKlVM3+zv78fALI8Hk8mgHUiQpfLhTmIoOINALpYLIYNGzaMGY3Gx263+5SKpbGzs1NrNpuVRYsWjYbD4SERSUYikbUAbH6/P0NEeO7cuQwA9tHR0eXbt29PktS+gIhkBsmfCwsLh91u9wDJz9NgfLe+vt63Zs2aEMk6AIhGox+RbLlw4cI9AEk1yOdut/s+yR9ramoMf6sByYWhUKiltLT0USKR8JB8K+2CZU6ns7+8vLyP5L5oNLqNpG///v33AEyYzeaJvLy8Eb1eH8/KyhqNRCI9JL+5detWpqIurhSApYODg3nr16+noigPamtrA2mbU5OTkxMj+QzAsuzs7E1VVVXPWltb9e3t7aGSkpIpAJOxWKygvr7eVF1dHXY4HPaysrJNLyaO5NcOh6Orqamph+Rnqk6nyqKHDx/e3rhxo5fk7cbGxvbKyspWkh0kD5N8h6SF5Hskz0xNTd3t7u5uIVmliEgyGo3mAVgfDAaju3btUgDcUNFJqnKsuLh4vKioaEkqlXrW29ubunjxYjaA70TkbFrXNwNoJmm32WxGAIMKAGRnZ2/zer0mm82WMplMnSLyiKSoW1QjInGS/hUrVixpamqaLSsrM2o0mlYROauumpRaZI26fduQRhxmAKsGBgYimzdvJoDz89huTv6+du1a7c2bNyfz8/OHAfykNgjnuEJEkmnkpCUpGgCmYDAYt9vtcYPB8IuItKXTohodAFy3Wq2hBQsWTIfD4X4AI+qgpf7Bw39dmBQRKgCeFBQUNAHQhMPhlnmDh7lJF5EJkmcqKirso6OjSQCvpWX4Ug6X//gHMWdnBLAzFovlmEymZhHpnpftyx3MI/WXnpGRESPJPJKZ/yW4PwHAfrF3qhwZbAAAAABJRU5ErkJggg==';
-    const CURSOR_URL = `url("data:image/png;base64,${LOGO_B64}") 12 2, none`;
-    document.documentElement.style.cursor = CURSOR_URL;
+    const cvs = document.createElement('canvas');
+    cvs.style.cssText = 'position:fixed;top:0;left:0;pointer-events:none;z-index:9995;';
+    cvs.width = window.innerWidth;
+    cvs.height = window.innerHeight;
+    document.body.appendChild(cvs);
+    const ctx = cvs.getContext('2d');
 
-    const trail = [];
-    let pmx = -300, pmy = -300;
+    window.addEventListener('resize', () => {
+      cvs.width = window.innerWidth;
+      cvs.height = window.innerHeight;
+    });
+
+    const pts = [];
+    const MAXPTS = 36;
+    const LIFETIME = 700; // ms
 
     document.addEventListener('mousemove', e => {
-      const mx = e.clientX, my = e.clientY;
-      trail.push({x: mx, y: my});
-      if (trail.length > 24) trail.shift();
-
-      trail.forEach((pt, i) => {
-        if (i % 2 !== 0) return;
-        const age = i / trail.length;
-        const size = 10 + age * 60;
-        const p = document.createElement('div');
-        p.style.cssText = `position:fixed;left:${pt.x}px;top:${pt.y}px;width:${size}px;height:${size}px;border-radius:50%;background:radial-gradient(circle,rgba(60,140,255,${age * 0.18}) 0%,transparent 70%);pointer-events:none;z-index:9995;transform:translate(-50%,-50%);transition:opacity 1.1s ease;`;
-        document.body.appendChild(p);
-        setTimeout(() => { p.style.opacity = '0'; }, 30);
-        setTimeout(() => p.remove(), 1150);
-      });
-
-      pmx = mx; pmy = my;
+      pts.push({ x: e.clientX, y: e.clientY, t: performance.now() });
+      if (pts.length > MAXPTS) pts.shift();
     });
+
+    (function drawTrail() {
+      const now = performance.now();
+      // Удаляем старые точки
+      while (pts.length && now - pts[0].t > LIFETIME) pts.shift();
+
+      ctx.clearRect(0, 0, cvs.width, cvs.height);
+
+      if (pts.length > 1) {
+        // Рисуем сегменты от хвоста к голове
+        for (let i = 1; i < pts.length; i++) {
+          const p0 = pts[i - 1], p1 = pts[i];
+          const age = i / pts.length; // 0=хвост, 1=голова
+          const timeAge = 1 - (now - p1.t) / LIFETIME;
+          const a = age * timeAge;
+
+          ctx.beginPath();
+          ctx.moveTo(p0.x, p0.y);
+          ctx.lineTo(p1.x, p1.y);
+          ctx.lineWidth = age * 7;
+          ctx.lineCap = 'round';
+          ctx.lineJoin = 'round';
+          ctx.strokeStyle = `rgba(60,140,255,${a * 0.55})`;
+          ctx.shadowBlur = age * 18;
+          ctx.shadowColor = `rgba(40,120,255,${a * 0.4})`;
+          ctx.stroke();
+        }
+        ctx.shadowBlur = 0;
+      }
+
+      requestAnimationFrame(drawTrail);
+    })();
   }
 
   // Safari: скрыть нижний тулбар при загрузке
