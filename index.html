@@ -572,14 +572,6 @@ if(localStorage.getItem('cookie_consent')==='all')loadGA();
 </div>
 
 <script>
-  // Safari: скрыть нижний тулбар при загрузке
-  if (/iPhone|iPad|iPod/.test(navigator.userAgent)) {
-    document.body.style.minHeight = (window.innerHeight + 2) + 'px';
-    setTimeout(() => {
-      window.scrollTo(0, 1);
-      setTimeout(() => window.scrollTo(0, 1), 300);
-    }, 100);
-  }
 
   // Cookie banner
   const banner = document.getElementById('cookie-banner');
