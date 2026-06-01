@@ -66,7 +66,14 @@
   }
 
   .hero-bg-z {
-    position: absolute;
+    position: fixed;
+    top: 0; left: 0;
+    width: 100vw;
+    height: 100dvh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
     font-family: 'Playfair Display', serif;
     font-size: 60vw;
     font-weight: 700;
@@ -74,9 +81,9 @@
     line-height: 1;
     user-select: none;
     pointer-events: none;
-    top: 50%; left: 50%;
-    transform: translate(-50%, -50%);
     letter-spacing: -0.05em;
+    transform: none;
+    z-index: 0;
   }
 
   /* ── DISC ── */
@@ -464,11 +471,6 @@
       height: 100dvh;
     }
     .hero-bg-z {
-      font-size: 130vh;
-      top: 50%;
-      left: 50%;
-      right: auto;
-      transform: translate(-50%, -46%);
       color: rgba(240,236,228,0.045);
       letter-spacing: -0.04em;
     }
@@ -572,6 +574,31 @@ if(localStorage.getItem('cookie_consent')==='all')loadGA();
 </div>
 
 <script>
+  // Z — заполнить экран точно по краям
+  (function fitZ() {
+    const el = document.getElementById('hero-z');
+    if (!el) return;
+    el.style.fontSize = '200px';
+    requestAnimationFrame(() => {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const r = range.getBoundingClientRect();
+      const scale = Math.max(window.innerWidth / r.width, window.innerHeight / r.height);
+      el.style.fontSize = (200 * scale) + 'px';
+    });
+  })();
+  window.addEventListener('resize', function() {
+    const el = document.getElementById('hero-z');
+    if (!el) return;
+    el.style.fontSize = '200px';
+    requestAnimationFrame(() => {
+      const range = document.createRange();
+      range.selectNodeContents(el);
+      const r = range.getBoundingClientRect();
+      const scale = Math.max(window.innerWidth / r.width, window.innerHeight / r.height);
+      el.style.fontSize = (200 * scale) + 'px';
+    });
+  });
 
   // Cookie banner
   const banner = document.getElementById('cookie-banner');
