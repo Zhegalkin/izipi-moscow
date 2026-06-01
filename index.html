@@ -447,8 +447,39 @@
   /* ── RESPONSIVE ── */
   @media (max-width: 768px) {
     nav { padding: 20px 24px; }
-    .hero { gap: 48px; }
-    .disc-wrap { width: 220px; height: 220px; }
+
+    /* Диск — от края 5мм с каждой стороны */
+    .disc-wrap {
+      width: calc(100vw - 38px);
+      height: calc(100vw - 38px);
+      max-width: 420px;
+    }
+
+    /* Z — на весь экран, IZIPI на нижней перекладине */
+    .hero {
+      position: relative;
+      flex-direction: column;
+      gap: 0;
+      justify-content: center;
+    }
+    .hero-bg-z {
+      font-size: 100vw;
+      top: 50%;
+      left: 50%;
+      right: auto;
+      transform: translate(-50%, -46%);
+      color: rgba(240,236,228,0.04);
+      letter-spacing: -0.04em;
+    }
+    .hero-title {
+      position: absolute;
+      bottom: 16%;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: clamp(28px, 8vw, 48px);
+      z-index: 2;
+    }
+
     .order-circle { width: 72px; height: 72px; }
     .order-dot { width: 8px; height: 8px; }
     footer { padding: 40px 24px; flex-direction: column; gap: 28px; align-items: flex-start; }
@@ -515,14 +546,7 @@ if(localStorage.getItem('cookie_consent')==='all')loadGA();
 <!-- FOOTER -->
 <footer>
   <div class="footer-by">by Zhegalkin</div>
-
   <!-- СОЦСЕТИ: добавить ссылки после создания аккаунтов -->
-
-  <div class="footer-right">
-    <div class="footer-year">2026</div>
-    <div class="footer-inn">ИНН 503826699247 · Самозанятый</div>
-    <a class="footer-oferta" href="oferta.html">Публичная оферта</a>
-  </div>
 </footer>
 
 <!-- LEGAL FOOTER (152-ФЗ) -->
