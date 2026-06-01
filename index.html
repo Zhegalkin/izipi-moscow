@@ -120,14 +120,15 @@
   /* ── GLOW behind disc ── */
   #disc-glow {
     position: absolute;
-    width: 600px;
-    height: 600px;
+    width: 580px;
+    height: 580px;
+    margin-left: -290px;
+    margin-top: -290px;
     border-radius: 50%;
-    background: radial-gradient(circle, rgba(60,140,255,0.18) 0%, rgba(20,80,200,0.08) 40%, transparent 70%);
+    background: radial-gradient(circle, rgba(60,140,255,0.22) 0%, rgba(20,80,200,0.1) 35%, rgba(10,40,120,0.04) 60%, transparent 72%);
     pointer-events: none;
     z-index: 0;
-    transition: opacity 0.4s ease;
-    opacity: 0.4;
+    opacity: 0.35;
   }
 
   /* ── Z FLASH ── */
@@ -149,7 +150,8 @@
     width: 88%;
     height: 88%;
     object-fit: contain;
-    mix-blend-mode: multiply;
+    mix-blend-mode: screen;
+    filter: invert(1);
     pointer-events: none;
   }
 
@@ -583,7 +585,8 @@ if(localStorage.getItem('cookie_consent')==='all')loadGA();
   }
 
   disc.addEventListener('mousedown',  e => { isDragging = true; prevAngle = getAngle(e); prevTime = performance.now(); lastDelta = 0; velocity = 0; e.preventDefault(); }, { passive: false });
-  disc.addEventListener('touchstart', e => { isDragging = true; prevAngle = getAngle(e); prevTime = performance.now(); lastDelta = 0; velocity = 0; e.preventDefault(); }, { passive: false });
+  // На тач — НЕ сбрасываем velocity, сохраняем инерцию
+  disc.addEventListener('touchstart', e => { isDragging = true; prevAngle = getAngle(e); prevTime = performance.now(); lastDelta = velocity; e.preventDefault(); }, { passive: false });
 
   window.addEventListener('mousemove', e => {
     if (!isDragging) return;
@@ -619,6 +622,8 @@ if(localStorage.getItem('cookie_consent')==='all')loadGA();
   const glow  = document.getElementById('disc-glow');
   const heroZ = document.getElementById('hero-z');
   let zFlashing = false;
+  let zTimeout  = null;
+  let smoothIntensity = 0; // плавное значение для свечения
 
   (function animate() {
     if (!isDragging) {
@@ -632,22 +637,29 @@ if(localStorage.getItem('cookie_consent')==='all')loadGA();
       disc.style.transform = `rotate(${rotation}deg)`;
     }
 
-    // Glow intensity based on speed
+    // Плавное свечение (lerp к цели)
     const speed = Math.abs(isDragging ? lastDelta : velocity);
-    const intensity = Math.min(1, (speed - DEFAULT_SPEED) / 8);
-    const glowOpacity = 0.4 + intensity * 1.4;
-    const glowSize = 600 + intensity * 400;
-    glow.style.opacity = glowOpacity;
-    glow.style.width  = glowSize + 'px';
-    glow.style.height = glowSize + 'px';
+    const targetIntensity = Math.min(1, Math.max(0, (speed - DEFAULT_SPEED) / 8));
+    smoothIntensity += (targetIntensity - smoothIntensity) * 0.06;
 
-    // Z flash when spun fast
+    const glowOpacity = 0.35 + smoothIntensity * 1.5;
+    const glowSize    = 580 + smoothIntensity * 500;
+    glow.style.opacity = glowOpacity;
+    glow.style.width   = glowSize + 'px';
+    glow.style.height  = glowSize + 'px';
+    glow.style.marginLeft = -(glowSize / 2) + 'px';
+    glow.style.marginTop  = -(glowSize / 2) + 'px';
+
+    // Z вспышка — загорается быстро, гаснет плавно за 2.5 сек
     if (speed > 6 && !zFlashing) {
       zFlashing = true;
+      clearTimeout(zTimeout);
+      heroZ.style.transition = 'color 0.2s ease, text-shadow 0.2s ease';
       heroZ.classList.add('z-flash');
-      setTimeout(() => {
+      zTimeout = setTimeout(() => {
+        heroZ.style.transition = 'color 2.5s ease, text-shadow 2.5s ease';
         heroZ.classList.remove('z-flash');
-        setTimeout(() => { zFlashing = false; }, 2500);
+        zTimeout = setTimeout(() => { zFlashing = false; }, 2600);
       }, 2500);
     }
 
