@@ -152,6 +152,7 @@
     object-fit: contain;
     mix-blend-mode: multiply;
     filter: drop-shadow(0px 5px 10px rgba(0,20,80,0.7)) drop-shadow(0px 2px 3px rgba(0,0,0,0.6));
+    clip-path: circle(48%);
     pointer-events: none;
   }
 
@@ -455,25 +456,26 @@
       max-width: 420px;
     }
 
-    /* Z — на весь экран, IZIPI на нижней перекладине */
+    /* Z — во весь экран */
     .hero {
       position: relative;
       flex-direction: column;
       gap: 0;
       justify-content: center;
+      height: 100dvh;
     }
     .hero-bg-z {
-      font-size: 100vw;
+      font-size: 140vw;
       top: 50%;
       left: 50%;
       right: auto;
       transform: translate(-50%, -46%);
-      color: rgba(240,236,228,0.04);
+      color: rgba(240,236,228,0.045);
       letter-spacing: -0.04em;
     }
     .hero-title {
       position: absolute;
-      bottom: 16%;
+      bottom: 13%;
       left: 50%;
       transform: translateX(-50%);
       font-size: clamp(28px, 8vw, 48px);
@@ -571,6 +573,9 @@ if(localStorage.getItem('cookie_consent')==='all')loadGA();
 </div>
 
 <script>
+  // Safari: скрыть нижний тулбар при загрузке
+  setTimeout(() => window.scrollTo(0, 1), 100);
+
   // Cookie banner
   const banner = document.getElementById('cookie-banner');
   if (localStorage.getItem('izipi_cookie_accepted') === '1') {
@@ -608,40 +613,65 @@ if(localStorage.getItem('cookie_consent')==='all')loadGA();
     return Math.atan2(py - cy, px - cx) * (180 / Math.PI);
   }
 
-  disc.addEventListener('mousedown',  e => { isDragging = true; prevAngle = getAngle(e); prevTime = performance.now(); lastDelta = 0; velocity = 0; e.preventDefault(); }, { passive: false });
-  // На тач — НЕ сбрасываем velocity, сохраняем инерцию
-  disc.addEventListener('touchstart', e => { isDragging = true; prevAngle = getAngle(e); prevTime = performance.now(); lastDelta = velocity; e.preventDefault(); }, { passive: false });
+  let didMove  = false;  // отличаем тап от свайпа
+  let braking  = false;  // режим плавной остановки
+  const BRAKE_FRICTION = 0.9696; // ~2.5 сек до нуля на 60fps
 
-  window.addEventListener('mousemove', e => {
+  disc.addEventListener('mousedown', e => {
+    isDragging = true; braking = false; didMove = false;
+    prevAngle = getAngle(e); prevTime = performance.now(); lastDelta = 0; velocity = 0;
+    e.preventDefault();
+  }, { passive: false });
+
+  disc.addEventListener('touchstart', e => {
+    isDragging = true; braking = false; didMove = false;
+    prevAngle = getAngle(e); prevTime = performance.now();
+    // сохраняем текущую инерцию как стартовый lastDelta
+    lastDelta = velocity;
+    e.preventDefault();
+  }, { passive: false });
+
+  function handleMove(e) {
     if (!isDragging) return;
     const angle = getAngle(e);
     const now = performance.now();
-    const dt  = now - prevTime;
+    const elapsed = now - prevTime;
     let delta = angle - prevAngle;
     if (delta >  180) delta -= 360;
     if (delta < -180) delta += 360;
+    if (Math.abs(delta) > 0.3) didMove = true;
     rotation += delta;
     disc.style.transform = `rotate(${rotation}deg)`;
-    if (dt > 0) lastDelta = delta * (16 / dt);
+    if (elapsed > 0) lastDelta = delta * (16 / elapsed);
     prevAngle = angle; prevTime = now;
-  });
-
+  }
+  window.addEventListener('mousemove', handleMove);
   window.addEventListener('touchmove', e => {
     if (!isDragging) return;
-    const angle = getAngle(e);
-    const now = performance.now();
-    const dt  = now - prevTime;
-    let delta = angle - prevAngle;
-    if (delta >  180) delta -= 360;
-    if (delta < -180) delta += 360;
-    rotation += delta;
-    disc.style.transform = `rotate(${rotation}deg)`;
-    if (dt > 0) lastDelta = delta * (16 / dt);
-    prevAngle = angle; prevTime = now;
+    handleMove(e);
   }, { passive: true });
 
-  window.addEventListener('mouseup',  () => { if (isDragging) { isDragging = false; velocity = lastDelta || DEFAULT_SPEED; } });
-  window.addEventListener('touchend', () => { if (isDragging) { isDragging = false; velocity = lastDelta || DEFAULT_SPEED; } });
+  window.addEventListener('mouseup', () => {
+    if (!isDragging) return;
+    isDragging = false;
+    if (!didMove) {
+      // тап без движения → плавное торможение
+      braking = true;
+    } else {
+      braking = false;
+      velocity = lastDelta || DEFAULT_SPEED;
+    }
+  });
+  window.addEventListener('touchend', () => {
+    if (!isDragging) return;
+    isDragging = false;
+    if (!didMove) {
+      braking = true;
+    } else {
+      braking = false;
+      velocity = lastDelta || DEFAULT_SPEED;
+    }
+  });
 
   const glow  = document.getElementById('disc-glow');
   const heroZ = document.getElementById('hero-z');
@@ -655,7 +685,11 @@ if(localStorage.getItem('cookie_consent')==='all')loadGA();
     lastTS = ts;
 
     if (!isDragging) {
-      if (Math.abs(velocity) > DEFAULT_SPEED) {
+      if (braking) {
+        // плавное торможение: ~2.5 сек до остановки
+        velocity *= Math.pow(BRAKE_FRICTION, dt);
+        if (Math.abs(velocity) < 0.02) { velocity = DEFAULT_SPEED; braking = false; }
+      } else if (Math.abs(velocity) > DEFAULT_SPEED) {
         velocity *= Math.pow(FRICTION, dt);
         if (Math.abs(velocity) <= DEFAULT_SPEED) velocity = DEFAULT_SPEED;
       } else {
