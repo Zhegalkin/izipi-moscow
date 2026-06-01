@@ -147,10 +147,11 @@
     top: 52%;
     left: 56%;
     transform: translate(-50%, -50%);
-    width: 88%;
-    height: 88%;
+    width: 100%;
+    height: 100%;
     object-fit: contain;
     mix-blend-mode: multiply;
+    filter: drop-shadow(0px 5px 10px rgba(0,20,80,0.7)) drop-shadow(0px 2px 3px rgba(0,0,0,0.6));
     pointer-events: none;
   }
 
@@ -646,17 +647,21 @@ if(localStorage.getItem('cookie_consent')==='all')loadGA();
   const heroZ = document.getElementById('hero-z');
   let zFlashing = false;
   let zTimeout  = null;
-  let smoothIntensity = 0; // плавное значение для свечения
+  let smoothIntensity = 0;
+  let lastTS = 0;
 
-  (function animate() {
+  (function animate(ts) {
+    const dt = lastTS ? Math.min((ts - lastTS) / 16.67, 3) : 1;
+    lastTS = ts;
+
     if (!isDragging) {
       if (Math.abs(velocity) > DEFAULT_SPEED) {
-        velocity *= FRICTION;
+        velocity *= Math.pow(FRICTION, dt);
         if (Math.abs(velocity) <= DEFAULT_SPEED) velocity = DEFAULT_SPEED;
       } else {
         velocity = DEFAULT_SPEED;
       }
-      rotation += velocity;
+      rotation += velocity * dt;
       disc.style.transform = `rotate(${rotation}deg)`;
     }
 
@@ -687,7 +692,7 @@ if(localStorage.getItem('cookie_consent')==='all')loadGA();
     }
 
     requestAnimationFrame(animate);
-  })();
+  })(0);
 </script>
 
 
